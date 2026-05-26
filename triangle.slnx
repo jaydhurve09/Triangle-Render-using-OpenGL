@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="triangle/triangle.vcxproj" Id="88b51944-28eb-4483-b512-9a67a63a9d1c" />
+</Solution>
