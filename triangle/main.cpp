@@ -1,54 +1,54 @@
-#include <SDL3/SDL.h>
-#include <iostream>
+	#include <SDL3/SDL.h>
 
-int main() {
-    SDL_Window* window;
-    SDL_Surface* surface;
-    SDL_Renderer* renderer;
-	SDL_Texture* texture;
+	void initialize() {
+		if (!SDL_Init(SDL_INIT_VIDEO)) {
+			SDL_Log("SDL_Init() faild: %s", SDL_GetError());
+		}
+	}
 
-    if (SDL_Init(SDL_INIT_VIDEO) == false) {
-        SDL_Log("SDL_Init failed: %s", SDL_GetError());
-        return -1;
-    }
+	void createWindow(SDL_Window*& window) {
+		window = SDL_CreateWindow("Triangle Window", 380, 240, SDL_WINDOW_RESIZABLE);
+	}
 
-    window = SDL_CreateWindow(
-        "Triangle",
-        320,
-        240,
-        SDL_WINDOW_RESIZABLE
-    );
+	void createSurface(SDL_Surface*& surface) {
+		surface = SDL_LoadBMP("sample.bmp");
+	}
 
-    if (!window) {
-        SDL_Log("Window creation failed: %s", SDL_GetError());
-        return -1;
-    }
+	void CreateRender(SDL_Renderer*& renderer, SDL_Window* window) {
+		renderer = SDL_CreateRenderer(window, NULL);
+	}
 
-    renderer = SDL_CreateRenderer(window, NULL);
+	void CreateTexture(SDL_Texture*& texture, SDL_Renderer* renderer, SDL_Surface* surface) {
+		texture = SDL_CreateTextureFromSurface(renderer, surface);
+	}
 
-    surface = SDL_LoadBMP("sample.bmp");
+	void cleanup(SDL_Window* window, SDL_Surface* surface, SDL_Renderer* renderer, SDL_Texture* texture) {
+		SDL_DestroyTexture(texture);
+		SDL_DestroySurface(surface);
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
+		SDL_Quit();
+	}
 
-    if (!surface) {
-        SDL_Log("BMP load failed: %s", SDL_GetError());
-        return -1;
-    }
+	int main() {
+		SDL_Window* window = NULL;
+		SDL_Surface* surface = NULL;
+		SDL_Renderer* renderer = NULL;
+		SDL_Texture* texture = NULL;
 
-    SDL_Log("BMP loaded successfully!");
+		initialize();
+		createWindow(window);
+		createSurface(surface);
+		CreateRender(renderer, window);
+		CreateTexture(texture, renderer, surface);
 
-	texture = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_RenderClear(renderer);
+		SDL_RenderTexture(renderer, texture, NULL, NULL);
+		SDL_RenderPresent(renderer);
 
-    SDL_RenderClear(renderer);
-    SDL_RenderTexture(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
+		SDL_Delay(5000);
 
-    SDL_Delay(5000);
+		cleanup(window, surface, renderer, texture);
 
-    SDL_DestroyTexture(texture);
-    SDL_DestroySurface(surface);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-
-    SDL_Quit();
-
-    return 0;
-}
+		return 0;
+	}
